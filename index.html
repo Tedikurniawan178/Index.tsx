@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONE TAP TIMING</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            font-family: Arial, sans-serif;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        canvas {
+            border: none;
+            background-color: black;
+        }
+        #tutorial {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            display: block;
+        }
+        #tutorial h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        #tutorial p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        #startButton {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background-color: cyan;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #score {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 2em;
+        }
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            display: none;
+        }
+        #gameOver h2 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        #restartButton {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background-color: magenta;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="tutorial">
+        <h1>ONE TAP TIMING</h1>
+        <p>Tap once. Miss once. Game over.</p>
+        <p><strong>Cara Bermain:</strong></p>
+        <p>Garis putih di tengah layar adalah target.</p>
+        <p>Blok neon bergerak naik-turun.</p>
+        <p>TAP blok TEPAT saat blok menyentuh garis.</p>
+        <p>Jika tepat: Skor +1, kecepatan naik.</p>
+        <p>Jika salah: GAME OVER.</p>
+        <p>Bertahan selama mungkin!</p>
+        <button id="startButton">Mulai Game</button>
+    </div>
+    <div id="score">Skor: 0</div>
+    <canvas id="gameCanvas" width="400" height="600"></canvas>
+    <div id="gameOver">
+        <h2>GAME OVER</h2>
+        <p id="finalScore">Skor Akhir: 0</p>
+        <button id="restartButton">Main Lagi</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const tutorial = document.getElementById('tutorial');
+        const startButton = document.getElementById('startButton');
+        const scoreDisplay = document.getElementById('score');
+        const gameOver = document.getElementById('gameOver');
+        const finalScore = document.getElementById('finalScore');
+        const restartButton = document.getElementById('restartButton');
+
+        let score = 0;
+        let speed = 2; // Kecepatan awal blok
+        let blockY = 0; // Posisi Y blok
+        let direction = 1; // 1 = turun, -1 = naik
+        let gameRunning = false;
+        let gameOverFlag = false;
+        let flash = false; // Untuk efek flash saat sukses
+
+        const targetY = canvas.height / 2; // Garis target di tengah
+        const blockHeight = 50;
+        const blockWidth = 50;
+        const blockX = canvas.width / 2 - blockWidth / 2;
+
+        // Fungsi untuk menggambar garis target
+        function drawTarget() {
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(0, targetY);
+            ctx.lineTo(canvas.width, targetY);
+            ctx.stroke();
+        }
+
+        // Fungsi untuk menggambar blok
+        function drawBlock() {
+            ctx.fillStyle = flash ? 'yellow' : 'cyan'; // Flash kuning saat sukses
+            ctx.fillRect(blockX, blockY, blockWidth, blockHeight);
+        }
+
+        // Fungsi untuk update posisi blok
+        function updateBlock() {
+            blockY += speed * direction;
+            if (blockY <= 0 || blockY >= canvas.height - blockHeight) {
+                direction *= -1; // Balik arah
+            }
+        }
+
+        // Fungsi untuk cek timing
+        function checkTiming() {
+            const blockCenter = blockY + blockHeight / 2;
+            return Math.abs(blockCenter - targetY) < 10; // Toleransi 10px
+        }
+
+        // Fungsi untuk flash efek
+        function triggerFlash() {
+            flash = true;
+            setTimeout(() => flash = false, 200);
+        }
+
+        // Fungsi untuk getar (opsional, hanya di mobile)
+        function vibrate() {
+            if (navigator.vibrate) {
+                navigator.vibrate(100);
+            }
+        }
+
+        // Event listener untuk TAP
+        canvas.addEventListener('click', () => {
+            if (!gameRunning || gameOverFlag) return;
+
+            if (checkTiming()) {
+                score++;
+                speed += 0.5; // Tingkatkan kecepatan
+                scoreDisplay.textContent = `Skor: ${score}`;
+                triggerFlash();
+                vibrate();
+            } else {
+                gameOverFlag = true;
+                finalScore.textContent = `Skor Akhir: ${score}`;
+                gameOver.style.display = 'block';
+                canvas.style.display = 'none';
+            }
+        });
+
+        // Fungsi game loop
+        function gameLoop() {
+            if (!gameRunning || gameOverFlag) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawTarget();
+            updateBlock();
+            drawBlock();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Mulai game
+        startButton.addEventListener('click', () => {
+            tutorial.style.display = 'none';
+            canvas.style.display = 'block';
+            score = 0;
+            speed = 2;
+            blockY = 0;
+            direction = 1;
+            gameRunning = true;
+            gameOverFlag = false;
+            scoreDisplay.textContent = `Skor: ${score}`;
+            gameLoop();
+        });
+
+        // Restart game
+        restartButton.addEventListener('click', () => {
+            gameOver.style.display = 'none';
+            canvas.style.display = 'block';
+            score = 0;
+            speed = 2;
+            blockY = 0;
+            direction = 1;
+            gameRunning = true;
+            gameOverFlag = false;
+            scoreDisplay.textContent = `Skor: ${score}`;
+            gameLoop();
+        });
+    </script>
+</body>
+</html>
