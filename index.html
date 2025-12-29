@@ -82,21 +82,21 @@
     <div id="tutorial">
         <h1>ONE TAP TIMING</h1>
         <p>Tap once. Miss once. Game over.</p>
-        <p><strong>Cara Bermain:</strong></p>
-        <p>Garis putih di tengah layar adalah target.</p>
-        <p>Blok neon bergerak naik-turun.</p>
-        <p>TAP blok TEPAT saat blok menyentuh garis.</p>
-        <p>Jika tepat: Skor +1, kecepatan naik.</p>
-        <p>Jika salah: GAME OVER.</p>
-        <p>Bertahan selama mungkin!</p>
-        <button id="startButton">Mulai Game</button>
+        <p><strong>How to play:</strong></p>
+        <p>The white line in the middle of the screen is the target.</p>
+        <p>Neon blocks move up and down</p>
+        <p>TAP the block RIGHT when the block touches the line.</p>
+        <p>if true: Skor +1, speed up.</p>
+        <p>if wrong: GAME OVER.</p>
+        <p>Survive as long as possible!</p>
+        <button id="startButton">start the game</button>
     </div>
     <div id="score">Skor: 0</div>
     <canvas id="gameCanvas" width="400" height="600"></canvas>
     <div id="gameOver">
         <h2>GAME OVER</h2>
-        <p id="finalScore">Skor Akhir: 0</p>
-        <button id="restartButton">Main Lagi</button>
+        <p id="finalScore">final score: 0</p>
+        <button id="restartButton">play again</button>
     </div>
 
     <script>
@@ -111,7 +111,7 @@
 
         let score = 0;
         let speed = 2; // Kecepatan awal blok
-        let blockY = 0; // Posisi Y blok
+        let blockY = 0;Survive as long as possible! // Posisi Y blok
         let direction = 1; // 1 = turun, -1 = naik
         let gameRunning = false;
         let gameOverFlag = false;
@@ -122,7 +122,7 @@
         const blockWidth = 50;
         const blockX = canvas.width / 2 - blockWidth / 2;
 
-        // Fungsi untuk menggambar garis target
+        // Fungsi untuk menggambar garis tar Neon blocks move up and downget
         function drawTarget() {
             ctx.strokeStyle = 'white';
             ctx.lineWidth = 5;
