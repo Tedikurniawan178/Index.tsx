@@ -172,12 +172,12 @@
             if (checkTiming()) {
                 score++;
                 speed += 0.5; // Tingkatkan kecepatan
-                scoreDisplay.textContent = `Skor: ${score}`;
+                scoreDisplay.textContent = `score: ${score}`;
                 triggerFlash();
                 vibrate();
             } else {
                 gameOverFlag = true;
-                finalScore.textContent = `Skor Akhir: ${score}`;
+                finalScore.textContent = `final score: ${score}`;
                 gameOver.style.display = 'block';
                 canvas.style.display = 'none';
             }
@@ -205,7 +205,7 @@
             direction = 1;
             gameRunning = true;
             gameOverFlag = false;
-            scoreDisplay.textContent = `Skor: ${score}`;
+            scoreDisplay.textContent = `score: ${score}`;
             gameLoop();
         });
 
@@ -219,7 +219,7 @@
             direction = 1;
             gameRunning = true;
             gameOverFlag = false;
-            scoreDisplay.textContent = `Skor: ${score}`;
+            scoreDisplay.textContent = `score: ${score}`;
             gameLoop();
         });
     </script>
